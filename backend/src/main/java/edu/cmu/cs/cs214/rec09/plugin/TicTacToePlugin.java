@@ -2,15 +2,17 @@ package edu.cmu.cs.cs214.rec09.plugin;
 
 import edu.cmu.cs.cs214.rec09.framework.core.GameFramework;
 import edu.cmu.cs.cs214.rec09.framework.core.GamePlugin;
+import edu.cmu.cs.cs214.rec09.games.RockPaperScissors;
+import edu.cmu.cs.cs214.rec09.games.TicTacToe;
 
 public class TicTacToePlugin implements GamePlugin<String>{
 
     private static final String GAME_NAME = "TicTacToe";
     private static final String GAME_START_FOOTER = "You are playing TikTacToe with a computer!";
-    private static final int WIDTH = 3;
-    private static final int HEIGHT = 3;
     private GameFramework framework;
-    
+    private Boolean gameResult = null;
+    private TicTacToe.Player currPlayer = TicTacToe.Player.O;
+    private TicTacToe ttt = new TicTacToe();
 
     @Override
     public String getGameName() {
@@ -22,13 +24,13 @@ public class TicTacToePlugin implements GamePlugin<String>{
     @Override
     public int getGridWidth() {
         // TODO Auto-generated method stub
-        return WIDTH;
+        return TicTacToe.SIZE;
     }
 
     @Override
     public int getGridHeight() {
         // TODO Auto-generated method stub
-        return HEIGHT;
+        return TicTacToe.SIZE;
     }
 
     @Override
@@ -45,38 +47,42 @@ public class TicTacToePlugin implements GamePlugin<String>{
 
     @Override
     public void onNewMove() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public boolean isMoveValid(int x, int y) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isMoveValid'");
+        return this.ttt.isValidPlay(x, y);
     }
 
     @Override
     public boolean isMoveOver() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isMoveOver'");
+        return gameResult != null;
     }
 
     @Override
     public void onMovePlayed(int x, int y) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onMovePlayed'");
+        this.framework.setSquare(x, y, this.currentPlayer());
+        this.ttt.play(x, y);
+        this.gameResult = this.ttt.winner() == null ? null : true;
+        this.currPlayer = this.currPlayer.opponent();
     }
 
     @Override
     public boolean isGameOver() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isGameOver'");
+        return gameResult != null;
     }
 
     @Override
     public String getGameOverMessage() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getGameOverMessage'");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(this.ttt.winner().toString());
+        stringBuilder.append(" Win!");
+        return  stringBuilder.toString();
     }
 
     @Override
@@ -88,7 +94,7 @@ public class TicTacToePlugin implements GamePlugin<String>{
     @Override
     public String currentPlayer() {
         // TODO Auto-generated method stub
-        return "Human";
+        return this.ttt.currentPlayer().toString();
     }
     
 }
